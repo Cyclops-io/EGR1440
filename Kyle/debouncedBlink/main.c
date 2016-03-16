@@ -4,7 +4,9 @@
 //
 //****************************************************************************
 
-#define SETUP  11
+#define SETUP	11	//01, 10, 11
+#define SW1 	1	//only define SW1
+#define Ucolor	1	//1 or 0
 
 #include "msp.h"
 #include "stdbool.h"
@@ -12,10 +14,9 @@
 #include "D:\Common\School\Files\EGR1440\myHeaders\mySetup.h"	//Edit path for save location
 #include "D:\Common\School\Files\EGR1440\myHeaders\debounce.h"	//Edit path for save location
 
-
 void main(void)
 {
-	const int setupState = SETUP;
+	uint16_t color = BLUE;
 
     //P1 config data to be OR'ed with the current state
     //of each reg
@@ -29,7 +30,7 @@ void main(void)
     uint8_t p2ren = 0b00000000;
 	uint8_t p2out = 0b00000000;
 
-    setup(setupState);
+    setup(SETUP);
     setP2(p2dir,p2ren,p2out);
     setP1(p1dir,p1ren,p1out);
     setP3P4P5P6P7P8P9P20();
@@ -39,7 +40,7 @@ void main(void)
 
     while(true)
       {
-    	int currentState = myDebounce();
+    	int currentState = myDebounce(SW2, 50);
     	int latched = 0;
     	if (currentState > previousState)
     	{
@@ -56,7 +57,7 @@ void main(void)
     			P1OUT = 0b00010010;
     			break;
     		case S:
-    			P2OUT ^= BIT1;
+    			P2OUT ^= color;
     			break;
     		}
     	}
