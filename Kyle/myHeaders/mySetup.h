@@ -10,6 +10,24 @@
 #include "D:\Common\School\Files\EGR1440\myHeaders\SRS.h"
 #endif
 
+#if SW1 == 1
+#undef SW1
+#undef SW2
+#define SW1 (*((volatile uint8_t *)(0x42098004)))
+#define SW2 (*((volatile uint8_t *)(0x42098010)))
+#elif SW1 == 2
+#undef SW1
+#undef SW2
+#define SW1 (*((volatile uint8_t *)(0x42098010)))
+#define SW2 (*((volatile uint8_t *)(0x42098004)))
+#endif
+
+#if Ucolor == 1
+#define RED		BIT0
+#define GREEN	BIT1
+#define	BLUE	BIT2
+#endif
+
 void setup(const int opts)
 {
 	switch (opts)
