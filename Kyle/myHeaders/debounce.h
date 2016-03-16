@@ -29,7 +29,7 @@ int myDebounce()
 	    {
 	      bounce = 0;
 	    }
-
+	  oldState = State;
 	}
       return bounce ^ 1;
     }
