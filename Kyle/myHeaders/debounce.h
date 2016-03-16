@@ -6,7 +6,7 @@
 #endif
 
 #ifndef __MYSYSTICK_H__
-#include "D:\School\EGR1440\myHeaders\mySystick.h"
+#include "D:\Common\School\Files\EGR1440\myHeaders\mySystick.h"
 #endif
 
 #define SW1IN (*((volatile uint8_t *)(0x42098004)))

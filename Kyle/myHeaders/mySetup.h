@@ -5,17 +5,24 @@
 #include "msp.h"
 #endif
 
-void setup()
+void setup(int opts)
 {
-  WDTCTL = WDTPW | WDTHOLD;   // Stop watchdog timer
-  P2DIR |= BIT0|BIT1|BIT2;	//port 2 direction
-	    //current contence or with BIT0(P2.0) or BIT1(P2.1) or BIT2(P2.2)
-		//BITs can be faunt in msp.h -> msp432p401r.h
-  P1DIR |= 0b00000001;	//port 1 direction all original state but P1.0 is output
+	//int x,y;
+	switch (opts)
+	{
+	case 01: // Stop watchdog timer
+		WDTCTL = WDTPW | WDTHOLD;
+		break;
+	case 10:
+		//x = 1;
+		break;
+	case 11:
+		WDTCTL = WDTPW | WDTHOLD;
+		//y = 1;
+		break;
+	}
+	//if((x ==1)|(y==1)) enum STATE{RS = 0, S = 1};
 
-
-  P1REN = 0b00010010;		//port 1 reg enable
-  P1OUT = 0b00010010;		//port 1 our put ||||input pullup resistor
 }
 
 #endif
