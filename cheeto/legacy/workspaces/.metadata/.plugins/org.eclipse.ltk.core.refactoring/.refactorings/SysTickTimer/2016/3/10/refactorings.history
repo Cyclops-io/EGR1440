@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;SysTickTimer/myToggle.s&apos; to &apos;setUpTimer.s&apos;" description="Rename resource &apos;myToggle.s&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="myToggle.s" name="setUpTimer.s" stamp="1456860209588" updateReferences="true"/>
+</session>

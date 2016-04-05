@@ -1,0 +1,149 @@
+/* --COPYRIGHT--,BSD
+ * Copyright (c) 2015, Texas Instruments Incorporated
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * *  Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * *  Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * *  Neither the name of Texas Instruments Incorporated nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * --/COPYRIGHT--*/
+//****************************************************************************
+//
+// main.c - MSP-EXP432P401R + Educational Boosterpack MkII - Temperature
+//
+//          Displays temperature measured by the TMP006 Infrared Thermopile
+//          Contactless Temperature Sensor. The MSP432 communicates
+//          with the sensor through I2C.
+//
+//****************************************************************************
+
+#include "msp.h"
+#include <driverlib.h>
+#include <grlib.h>
+#include "LcdDriver/Crystalfontz128x128_ST7735.h"
+#include "HAL_MSP_EXP432P401R_Crystalfontz128x128_ST7735.h"
+#include <HAL_I2C.h>
+#include "HAL_TMP006.h"
+#include <stdio.h>
+
+void PORT1_IRQHandler(void);
+void PORT2_IRQHandler(void);
+
+volatile int8_t FallingEdges = 5;
+
+int main(void){
+	volatile uint32_t ii;
+
+	MAP_WDT_A_holdTimer();
+
+	/* initialize Clock System */
+	//MAP_CS_setDCOCenteredFrequency(CS_DCO_Frequency_48);
+	MAP_CS_initClockSignal(CS_MCLK, CS_DCOCLK_SELECT, CS_CLOCK_DIVIDER_1 );
+	MAP_CS_initClockSignal(CS_HSMCLK, CS_DCOCLK_SELECT, CS_CLOCK_DIVIDER_1 );
+	MAP_CS_initClockSignal(CS_SMCLK, CS_DCOCLK_SELECT, CS_CLOCK_DIVIDER_1 );
+	MAP_CS_initClockSignal(CS_ACLK, CS_REFOCLK_SELECT, CS_CLOCK_DIVIDER_1 );
+
+	/* Initialize display */
+	Crystalfontz128x128_Init();
+	/* Set default screen orientation */
+	Crystalfontz128x128_SetOrientation(LCD_ORIENTATION_UP);
+	/* Initializes graphics contex */
+	Graphics_Context g_sContext;
+	Graphics_initContext(&g_sContext, &g_sCrystalfontz128x128);
+	Graphics_setForegroundColor(&g_sContext, GRAPHICS_COLOR_RED);
+	Graphics_setBackgroundColor(&g_sContext, GRAPHICS_COLOR_WHITE);
+	GrContextFontSet(&g_sContext, &g_sFontFixed6x8);
+	Graphics_clearDisplay(&g_sContext);
+
+	// setup P1.0 as output (red LED)
+	MAP_GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0);
+	MAP_GPIO_setAsOutputPin(GPIO_PORT_P2, GPIO_PIN0);
+	GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN0);
+	GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
+
+	//setup SW1 as input with interrupt
+	GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P1, GPIO_PIN1);
+	GPIO_interruptEdgeSelect(GPIO_PORT_P1, GPIO_PIN1, GPIO_HIGH_TO_LOW_TRANSITION);
+	GPIO_clearInterruptFlag(GPIO_PORT_P1,GPIO_PIN1);
+	GPIO_enableInterrupt(GPIO_PORT_P1,GPIO_PIN1);
+	MAP_Interrupt_registerInterrupt(GPIO_PORT_P1,PORT1_IRQHandler);
+	MAP_Interrupt_setPriority(INT_PORT1, 0x2);
+	MAP_Interrupt_enableInterrupt(INT_PORT1);
+
+	//setup SW2 as input with interrupt
+	GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P1, GPIO_PIN4);
+	GPIO_interruptEdgeSelect(GPIO_PORT_P1, GPIO_PIN4, GPIO_HIGH_TO_LOW_TRANSITION);
+	GPIO_clearInterruptFlag(GPIO_PORT_P1,GPIO_PIN4);
+	GPIO_enableInterrupt(GPIO_PORT_P1,GPIO_PIN4);
+	MAP_Interrupt_registerInterrupt(GPIO_PORT_P1,PORT2_IRQHandler);
+	MAP_Interrupt_setPriority(INT_PORT1, 0x2);
+	MAP_Interrupt_enableInterrupt(INT_PORT1);
+
+	Interrupt_enableMaster ();
+
+	char string[5];
+	while (1){
+
+
+
+
+		for(ii=0;ii<5000;ii++);
+		sprintf(string, "%d", FallingEdges);
+		Graphics_drawStringCentered(&g_sContext,
+				(int8_t *)string,
+										AUTO_STRING_LENGTH,
+										64,
+										30,
+								OPAQUE_TEXT);
+		Graphics_drawCircle(&g_sContext,20,20,10);
+	}
+}
+
+void PORT1_IRQHandler(void){
+	GPIO_clearInterruptFlag(GPIO_PORT_P1,GPIO_PIN1);
+	GPIO_disableInterrupt(GPIO_PORT_P1,GPIO_PIN1);
+	FallingEdges = FallingEdges + 1;
+	GPIO_clearInterruptFlag(GPIO_PORT_P1,GPIO_PIN1);
+	MAP_GPIO_toggleOutputOnPin(GPIO_PORT_P1, GPIO_PIN0);
+	MAP_GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN0);
+	/* Delay for switch debounce */
+	volatile uint32_t i;
+	for(i = 0; i < 10000; i++);
+	GPIO_enableInterrupt(GPIO_PORT_P1,GPIO_PIN1);
+}
+
+void PORT2_IRQHandler(void)
+{
+	GPIO_clearInterruptFlag(GPIO_PORT_P1,GPIO_PIN4);
+	GPIO_disableInterrupt(GPIO_PORT_P1,GPIO_PIN4);
+	FallingEdges = 0;
+	GPIO_clearInterruptFlag(GPIO_PORT_P1,GPIO_PIN4);
+	MAP_GPIO_toggleOutputOnPin(GPIO_PORT_P1, GPIO_PIN0);
+	MAP_GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN0);
+	/* Delay for switch debounce */
+	volatile uint32_t i;
+	for(i = 0; i < 10000; i++);
+	GPIO_enableInterrupt(GPIO_PORT_P1,GPIO_PIN4);
+}

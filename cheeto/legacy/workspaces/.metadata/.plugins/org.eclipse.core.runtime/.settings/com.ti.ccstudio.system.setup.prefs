@@ -1,0 +1,2 @@
+DEFAULT_CCS_TARGET_CONFIGURATION=/home/cheeto/programs/ti/workspaces/blinkLed/targetConfigs/MSP432P401R.ccxml
+eclipse.preferences.version=1

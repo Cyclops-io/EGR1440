@@ -1,0 +1,17 @@
+
+**** Build of configuration Debug for project systickTimer ****
+
+/home/cheeto/programs/ti/ccsv6/utils/bin/gmake -k all 
+Building file: ../myToggle.s
+Invoking: GNU Compiler
+"/home/cheeto/programs/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_8-2014q3/bin/arm-none-eabi-gcc" -c -mcpu=cortex-m4 -march=armv7e-m -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -D__MSP432P401R__ -DTARGET_IS_FALCON -Dgcc -I"/home/cheeto/programs/ti/ccsv6/ccs_base/arm/include" -I"/home/cheeto/programs/ti/ccsv6/ccs_base/arm/include/CMSIS" -I"/home/cheeto/programs/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_8-2014q3/arm-none-eabi/include" -g -gdwarf-3 -gstrict-dwarf -Wall -MMD -MP -MF"myToggle.d" -MT"myToggle.d" -o"myToggle.o"  "../myToggle.s"
+../myToggle.s: Assembler messages:
+../myToggle.s:6: Error: bad instruction `p2dir .field 0x40004C05'
+../myToggle.s:7: Error: bad instruction `p2out .field 0x40004C03'
+../myToggle.s:9: Error: bad instruction `mytoggle '
+../myToggle.s:12: Error: unshifted register required -- `eor R0,R0,#4'
+../myToggle.s:16: Error: bad instruction `place one or more values into consecutive halfwords in the current section.'
+gmake: *** [myToggle.o] Error 1
+gmake: Target `all' not remade because of errors.
+
+**** Build Finished ****

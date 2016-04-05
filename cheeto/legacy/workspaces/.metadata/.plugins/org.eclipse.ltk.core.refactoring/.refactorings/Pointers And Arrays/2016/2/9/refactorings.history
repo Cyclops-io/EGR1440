@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;Pointers And Arrays/myToggle.s&apos; to &apos;testASM.s&apos;" description="Rename resource &apos;myToggle.s&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="myToggle.s" name="testASM.s" stamp="1456265763810" updateReferences="true"/>
+</session>
