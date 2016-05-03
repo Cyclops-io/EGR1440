@@ -11,7 +11,7 @@
 	#define SYSTICK_STCVR   (HWREG32(0xE000E018)) /* SysTick Current Value Register */
 	#define SYSTICK_STCR    (HWREG32(0xE000E01C)) /* SysTick Calibration Value Register */
 //fucntion prototypes
-void SysTick_Init(int ms);
+void SysTick_Init(double ms);
 int debounce(int ms);
 
 //bit-band regions
