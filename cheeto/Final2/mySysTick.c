@@ -6,11 +6,11 @@
 #define SYSTICK_STCR    (HWREG32(0xE000E01C)) /* SysTick Calibration Value Register */
 
 // Initialize SysTick with busy wait running at bus clock.
-void SysTick_Init(int ms){
+void SysTick_Init(double ms){
 	//six seconds = 0x00FFFFFF
 	//calculation (ffffff/6) = (x / seconds)
 	//x = seconds * ffffff / 6
-	int registerValue = (0x00FFFFFF * (ms / 1000)) / 6;
+	double registerValue = (0x00FFFFFF * (ms / 1000)) / 6;
   SYSTICK_STCSR = 0;                    // disable SysTick during setup
   SYSTICK_STRVR = registerValue;           // maximum reload value
   SYSTICK_STCVR = 0;                    // any write to current clears it
